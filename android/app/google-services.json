@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "401242592429",
+    "project_id": "wallpaper-9dd6b",
+    "storage_bucket": "wallpaper-9dd6b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:401242592429:android:a1dcb805714e9078b26224",
+        "android_client_info": {
+          "package_name": "com.example.marfootball"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvenHG1-6NlhcOpMR2akSqBVmRm-uA4Rg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
