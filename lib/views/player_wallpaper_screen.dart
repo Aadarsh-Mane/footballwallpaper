@@ -1,25 +1,117 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_wallpaper_manager/flutter_wallpaper_manager.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:http/http.dart' as http;
 
-class CarouselImagePage extends StatefulWidget {
+class PlayerWallpapersScreen extends StatelessWidget {
+  final String playerName;
+  final int initialIndex;
+
+  PlayerWallpapersScreen(
+      {required this.playerName, required this.initialIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFF0F0F0F),
+      appBar: AppBar(
+        title: Text('$playerName Wallpapers'),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+      ),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('players')
+            .doc(playerName)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return Center(
+                child: Text('No wallpapers available for $playerName'));
+          }
+
+          var data = snapshot.data!.data() as Map<String, dynamic>;
+          var wallpapers =
+              List<Map<String, dynamic>>.from(data['wallpapers'] ?? []);
+          var imageUrls = wallpapers
+              .map((wallpaper) => wallpaper['url'] as String)
+              .toList();
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(8.0),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: 0.7, // Adjust based on the image aspect ratio
+            ),
+            itemCount: imageUrls.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FullscreenImageScreen1(
+                          imageUrls: imageUrls, // Pass the list of image URLs
+                          initialIndex: index),
+                    ),
+                  );
+                },
+                child: Hero(
+                  tag: 'image_$index',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrls[index],
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          color: Colors.white,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class FullscreenImageScreen1 extends StatefulWidget {
   final List<String> imageUrls;
   final int initialIndex;
 
-  CarouselImagePage({required this.imageUrls, required this.initialIndex});
+  FullscreenImageScreen1({required this.imageUrls, required this.initialIndex});
 
   @override
-  _CarouselImagePageState createState() => _CarouselImagePageState();
+  _FullscreenImageScreen1State createState() => _FullscreenImageScreen1State();
 }
 
-class _CarouselImagePageState extends State<CarouselImagePage> {
+class _FullscreenImageScreen1State extends State<FullscreenImageScreen1> {
   int _currentPage = 0;
   List<double> _imageHeights = []; // To store the height of each image
   bool _isFullScreen = false; // To toggle full-screen mode
@@ -27,6 +119,8 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
   @override
   void initState() {
     super.initState();
+    _currentPage =
+        widget.initialIndex; // Initialize the current page to the initial index
     _fetchImageHeights();
   }
 
@@ -61,11 +155,10 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
     }
   }
 
-// Function to set the current image as wallpaper
+  // Function to set the current image as wallpaper
   void _setWallpaper(String url) async {
     try {
       final filePath = await _downloadImage(url);
-      // Set the wallpaper to the home screen
       await WallpaperManager.setWallpaperFromFile(
           filePath, WallpaperManager.HOME_SCREEN);
       print("Wallpaper set successfully.");
@@ -92,7 +185,7 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
                         ),
                         errorWidget: (context, url, error) =>
                             Icon(Icons.error, color: Colors.white),
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                         width: MediaQuery.of(context).size.width,
                         height: _imageHeights[index], // Set height dynamically
                       ),

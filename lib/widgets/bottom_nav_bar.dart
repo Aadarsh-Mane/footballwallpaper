@@ -9,26 +9,33 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor:
+          Colors.black, // Background color of the BottomNavigationBar
+
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
+          backgroundColor: Colors.black,
           icon: Icon(Icons.home),
           label: 'Home',
         ),
         BottomNavigationBarItem(
+          backgroundColor: Colors.black,
           icon: Icon(Icons.settings),
           label: 'Settings',
         ),
         BottomNavigationBarItem(
+          backgroundColor: Colors.black,
           icon: Icon(Icons.person),
           label: 'Profile',
         ),
         BottomNavigationBarItem(
+          backgroundColor: Colors.black,
           icon: Icon(Icons.info),
           label: 'About',
         ),
       ],
       currentIndex: currentIndex,
-      selectedItemColor: Colors.amber[800],
+      selectedItemColor: Colors.white,
       onTap: onTap,
     );
   }
