@@ -54,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter MVC App'),
+        title: Text('4K Wallpaper '),
       ),
       drawer: Sidebar(
         onMenuItemClicked: (route) {
