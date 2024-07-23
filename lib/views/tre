@@ -53,68 +53,65 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              backgroundColor: Colors.black,
-              expandedHeight: MediaQuery.of(context).size.height * 0.3,
-              floating: false,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                background: CarouselSlider.builder(
-                  itemCount: bannerUrls.length,
-                  itemBuilder: (context, index, realIndex) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: CachedNetworkImage(
-                        imageUrl: bannerUrls[index],
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            Icon(Icons.error, color: Colors.white),
-                        fit: BoxFit.cover,
-                        width: MediaQuery.of(context).size.width,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.black,
+            expandedHeight: MediaQuery.of(context).size.height * 0.4,
+            floating: true,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: CarouselSlider.builder(
+                itemCount: bannerUrls.length,
+                itemBuilder: (context, index, realIndex) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: CachedNetworkImage(
+                      imageUrl: bannerUrls[index],
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(),
                       ),
-                    );
-                  },
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    aspectRatio: 2.0,
-                    enlargeCenterPage: true,
-                  ),
+                      errorWidget: (context, url, error) =>
+                          Icon(Icons.error, color: Colors.white),
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width,
+                    ),
+                  );
+                },
+                options: CarouselOptions(
+                  autoPlay: true,
+                  aspectRatio: 2.0,
+                  enlargeCenterPage: true,
                 ),
               ),
+              // title: Text('Trending Wallpapers'),
+              centerTitle: true,
             ),
-            SliverPersistentHeader(
-              delegate: _SliverAppBarDelegate(
-                TabBar(
-                  controller: _tabController,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: Colors.white,
-                  tabs: [
-                    Tab(text: 'Trending'),
-                    Tab(text: 'Clubs'),
-                    Tab(text: '4K'),
-                    Tab(text: '8K'),
-                  ],
-                ),
-              ),
-              pinned: true,
+            bottom: TabBar(
+              controller: _tabController,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.white,
+              tabs: [
+                Tab(text: 'Trending'),
+                Tab(text: 'Clubs'),
+                Tab(text: '4K'),
+                Tab(text: '8K'),
+              ],
             ),
-          ];
-        },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildImageGrid(),
-            _buildImageGrid(),
-            _buildImageGrid(),
-            _buildImageGrid(),
-          ],
-        ),
+          ),
+          SliverFillRemaining(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildImageGrid(),
+                _buildImageGrid(),
+                _buildImageGrid(),
+                _buildImageGrid(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -183,30 +180,5 @@ class _HomeScreenState extends State<HomeScreen>
         }
       },
     );
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: Colors.black,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
   }
 }

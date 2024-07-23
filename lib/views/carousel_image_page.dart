@@ -27,6 +27,7 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
   @override
   void initState() {
     super.initState();
+    _currentPage = widget.initialIndex;
     _fetchImageHeights();
   }
 
@@ -41,9 +42,10 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
         }),
       );
       final ImageInfo imageInfo = await completer.future;
-      setState(() {
-        _imageHeights.add(imageInfo.image.height.toDouble());
-      });
+      _imageHeights.add(imageInfo.image.height.toDouble());
+      if (_imageHeights.length == widget.imageUrls.length) {
+        setState(() {}); // Trigger rebuild when all heights are fetched
+      }
     }));
   }
 
@@ -61,7 +63,7 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
     }
   }
 
-// Function to set the current image as wallpaper
+  // Function to set the current image as wallpaper
   void _setWallpaper(String url) async {
     try {
       final filePath = await _downloadImage(url);
@@ -80,7 +82,7 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          _imageHeights.isNotEmpty
+          _imageHeights.length == widget.imageUrls.length
               ? CarouselSlider.builder(
                   itemCount: widget.imageUrls.length,
                   itemBuilder: (context, index, realIndex) {

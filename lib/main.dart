@@ -41,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
     SettingsScreen(),
     ProfileScreen(),
     AboutScreen(),
-    NewScreen()
+    // NewScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -76,11 +76,11 @@ class _MainScreenState extends State<MainScreen> {
               case '/about':
                 _selectedIndex = 3;
                 break;
-              case '/new':
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NewScreen()),
-                );
+                // case '/new':
+                //   Navigator.push(
+                //     context,
+                //     // MaterialPageRoute(builder: (context) => NewScreen()),
+                //   );
                 break;
             }
             if (route != '/new')
