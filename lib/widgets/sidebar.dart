@@ -74,13 +74,32 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              'New',
+              'clubs',
               style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              onMenuItemClicked('/new');
+              onMenuItemClicked('/clubs');
             },
           ),
+          ListTile(
+            title: Text(
+              'league',
+              style: TextStyle(color: Colors.white),
+            ),
+            onTap: () {
+              onMenuItemClicked('/league');
+            },
+          ),
+          // Spacer(),
+          Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Text(
+                '© 2024 Your Company Name. All rights reserved.',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              )),
         ],
       ),
     );

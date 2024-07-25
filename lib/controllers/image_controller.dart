@@ -41,12 +41,27 @@
 // }
 
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:marfootball/models/ad_model.dart';
 import 'package:marfootball/models/image_model.dart';
 import 'package:http/http.dart' as http;
 
 class ImageController {
   final String baseUrl = 'https://drive.google.com/uc?export=view&id=';
   final String apiUrl = 'https://mydriver.onrender.com/fetch-images';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<List<Ad>> fetchAds() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('ads').get();
+      return querySnapshot.docs
+          .map((doc) => Ad.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error fetching ads: $e');
+      return [];
+    }
+  }
 
   Future<List<String>> fetchImageUrls(String category) async {
     String folderId;
@@ -60,9 +75,25 @@ class ImageController {
         break;
       case 'Club-Real':
         folderId = '1ggL_nRRH8ivDyk7YcMwYoUUt5zCxRU34';
+        // folderId = '1-2Sx_72mrzSsZ6W7Qz-J_-_pRaE2Rnj1';
         break;
       case 'Club-Barcelona':
         folderId = '1-sFfcvP9-ZtwG6dvo5fghVkUBfLrioXH';
+        break;
+      case 'Club-Manchester':
+        folderId = '1-qEh1MRO9suk51rBIVsL1y9_rDS9DNUD';
+        break;
+      case 'Club-City':
+        folderId = '1-fsMDCMd6MulYpldjebXtFuTGAqrJWzJ';
+        break;
+      case 'Club-Liverpool':
+        folderId = '1-eOXBPQymnVih3Z0nJD6qlyx7Ug59Azw';
+        break;
+      case 'Club-Alhilal':
+        folderId = '1-V5jiVzNRompcVoJFG5ULGVzLVYBNdkk';
+        break;
+      case 'Club-Alnassar':
+        folderId = '1-cMbz9Q40QA02VBBJRJ1GafiN1w3iR8K';
         break;
       case '4K':
         folderId = 'YOUR_4K_FOLDER_ID';
@@ -70,6 +101,23 @@ class ImageController {
       case '8K':
         folderId = '1-LIGnPMg0_t_QoFgdnuZ9LPysmbnUlmW';
         break;
+      case 'Premuire':
+        folderId = '1-Lc8j7JjIQZgVzxwocuxgBgnOxFAgeCp';
+
+        break;
+      case 'seria':
+        folderId = '1-NPGeHRHBSjGHeM87qQO_nJs9p-hFqXa';
+        break;
+      case 'saudi':
+        folderId = '1-RNhe-K13BNJYPPQvt7JDPbf0rpcd-tj';
+        break;
+      case 'laliga':
+        folderId = '1-MahaNIKpipQhs59lW0f7hIAUWwJVbuk';
+        break;
+      case 'general':
+        folderId = '1-7VZ1uAUWjHD-JUu7iq7mAsUXZMmiQhl';
+        break;
+
       default:
         folderId = 'YOUR_DEFAULT_FOLDER_ID';
         break;

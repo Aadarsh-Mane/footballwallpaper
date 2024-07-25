@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:marfootball/models/ad_model.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:marfootball/controllers/image_controller.dart';
 import 'package:marfootball/views/carousel_image_page.dart';
@@ -13,19 +14,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  final List<String> bannerUrls = [
-    'https://c4.wallpaperflare.com/wallpaper/348/390/445/cristiano-ronaldo-kiev-ukraine-uefa-wallpaper-preview.jpg',
-    'https://c4.wallpaperflare.com/wallpaper/874/671/650/soccer-cristiano-ronaldo-portuguese-wallpaper-preview.jpg',
-    'https://c4.wallpaperflare.com/wallpaper/176/475/818/cristiano-madrid-portugal-real-wallpaper-preview.jpg',
+  final List<Ad> predefinedBannerAds = [
+    Ad(
+        imageUrl:
+            'https://c4.wallpaperflare.com/wallpaper/348/390/445/cristiano-ronaldo-kiev-ukraine-uefa-wallpaper-preview.jpg',
+        title: ''),
+    Ad(
+        imageUrl:
+            'https://c4.wallpaperflare.com/wallpaper/874/671/650/soccer-cristiano-ronaldo-portuguese-wallpaper-preview.jpg',
+        title: ''),
+    Ad(
+        imageUrl:
+            'https://c4.wallpaperflare.com/wallpaper/176/475/818/cristiano-madrid-portugal-real-wallpaper-preview.jpg',
+        title: ''),
   ];
 
   final ImageController _imageController = ImageController();
   late TabController _tabController;
+  late Future<List<Ad>> _adsFuture;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _adsFuture = _imageController.fetchAds();
     _tabController.addListener(() {
       setState(() {}); // Rebuild the widget tree when the tab changes
     });
@@ -57,28 +69,23 @@ class _HomeScreenState extends State<HomeScreen>
               background: Padding(
                 padding: const EdgeInsets.only(
                     bottom: 48.0), // Padding to separate from tab bar
-                child: CarouselSlider.builder(
-                  itemCount: bannerUrls.length,
-                  itemBuilder: (context, index, realIndex) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: CachedNetworkImage(
-                        imageUrl: bannerUrls[index],
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            Icon(Icons.error, color: Colors.white),
-                        fit: BoxFit.cover,
-                        width: MediaQuery.of(context).size.width,
-                      ),
-                    );
+                child: FutureBuilder<List<Ad>>(
+                  future: _adsFuture,
+                  builder: (context, snapshot) {
+                    List<Ad> combinedAds = List.from(predefinedBannerAds);
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                          child: Text('Failed to load ads',
+                              style: TextStyle(color: Colors.white)));
+                    } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                      combinedAds.addAll(snapshot.data!);
+                    }
+
+                    return _buildCarousel(combinedAds);
                   },
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    aspectRatio: 2.0,
-                    enlargeCenterPage: true,
-                  ),
                 ),
               ),
               centerTitle: true,
@@ -108,6 +115,50 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCarousel(List<Ad> ads) {
+    return CarouselSlider.builder(
+      itemCount: ads.length,
+      itemBuilder: (context, index, realIndex) {
+        return Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: CachedNetworkImage(
+                imageUrl: ads[index].imageUrl,
+                placeholder: (context, url) =>
+                    Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) =>
+                    Icon(Icons.error, color: Colors.white),
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width,
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              left: 10,
+              right: 10,
+              child: Container(
+                color: Colors.black54,
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Text(
+                  ads[index].title,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      options: CarouselOptions(
+        autoPlay: true,
+        aspectRatio: 2.0,
+        enlargeCenterPage: true,
       ),
     );
   }

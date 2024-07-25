@@ -3,7 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:marfootball/views/about_screen.dart';
 import 'package:marfootball/views/home_screen.dart';
-import 'package:marfootball/views/new_screen.dart';
+import 'package:marfootball/views/club_screen.dart';
+import 'package:marfootball/views/league_screen.dart';
 import 'package:marfootball/views/profile_screen.dart';
 import 'package:marfootball/views/settings_screen.dart';
 import 'package:marfootball/widgets/bottom_nav_bar.dart';
@@ -76,15 +77,22 @@ class _MainScreenState extends State<MainScreen> {
               case '/about':
                 _selectedIndex = 3;
                 break;
-              case '/new':
+              case '/clubs':
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => ClubWallpaperScreen()),
                 );
                 break;
+              case '/league':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => LeagueWallpaperScreen()),
+                );
+                break;
             }
-            if (route != '/new')
+            if (route != '/clubs' && route != '/league')
               Navigator.pop(
                   context); // Close the drawer if not navigating to 'NewScreen'
           });
