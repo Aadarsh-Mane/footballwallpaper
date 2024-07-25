@@ -58,6 +58,12 @@ class ImageController {
       case 'Clubs':
         folderId = '1ggL_nRRH8ivDyk7YcMwYoUUt5zCxRU34';
         break;
+      case 'Club-Real':
+        folderId = '1ggL_nRRH8ivDyk7YcMwYoUUt5zCxRU34';
+        break;
+      case 'Club-Barcelona':
+        folderId = '1-sFfcvP9-ZtwG6dvo5fghVkUBfLrioXH';
+        break;
       case '4K':
         folderId = 'YOUR_4K_FOLDER_ID';
         break;

@@ -76,11 +76,12 @@ class _MainScreenState extends State<MainScreen> {
               case '/about':
                 _selectedIndex = 3;
                 break;
-                // case '/new':
-                //   Navigator.push(
-                //     context,
-                //     // MaterialPageRoute(builder: (context) => NewScreen()),
-                //   );
+              case '/new':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ClubWallpaperScreen()),
+                );
                 break;
             }
             if (route != '/new')

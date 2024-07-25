@@ -53,16 +53,19 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              backgroundColor: Colors.black,
-              expandedHeight: MediaQuery.of(context).size.height * 0.3,
-              floating: false,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                background: CarouselSlider.builder(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.black,
+            expandedHeight:
+                MediaQuery.of(context).size.height * 0.3, // Adjusted height
+            floating: true,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 48.0), // Padding to separate from tab bar
+                child: CarouselSlider.builder(
                   itemCount: bannerUrls.length,
                   itemBuilder: (context, index, realIndex) {
                     return ClipRRect(
@@ -86,35 +89,34 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
               ),
+              // title: Text('Trending Wallpapers'),
+              centerTitle: true,
             ),
-            SliverPersistentHeader(
-              delegate: _SliverAppBarDelegate(
-                TabBar(
-                  controller: _tabController,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: Colors.white,
-                  tabs: [
-                    Tab(text: 'Trending'),
-                    Tab(text: 'Clubs'),
-                    Tab(text: '4K'),
-                    Tab(text: '8K'),
-                  ],
-                ),
-              ),
-              pinned: true,
+            bottom: TabBar(
+              controller: _tabController,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.white,
+              tabs: [
+                Tab(text: 'Trending'),
+                Tab(text: 'Clubs'),
+                Tab(text: '4K'),
+                Tab(text: '8K'),
+              ],
             ),
-          ];
-        },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildImageGrid(),
-            _buildImageGrid(),
-            _buildImageGrid(),
-            _buildImageGrid(),
-          ],
-        ),
+          ),
+          SliverFillRemaining(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildImageGrid(),
+                _buildImageGrid(),
+                _buildImageGrid(),
+                _buildImageGrid(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -146,67 +148,41 @@ class _HomeScreenState extends State<HomeScreen>
             itemCount: imageUrls.length,
             itemBuilder: (context, index) {
               return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CarouselImagePage(
-                        imageUrls: imageUrls,
-                        initialIndex: index,
-                      ),
-                    ),
-                  );
-                },
-                child: Hero(
-                  tag: 'image_$index',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrls[index],
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
-                          color: Colors.white,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CarouselImagePage(
+                          imageUrls: imageUrls,
+                          initialIndex: index,
                         ),
                       ),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
+                    );
+                  },
+                  child: Hero(
+                    tag: 'image_$index',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.0),
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrls[index],
+                        placeholder: (context, url) => Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            color: Colors.white,
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
                     ),
-                  ),
-                ),
-              );
+                  ));
             },
           );
         }
       },
     );
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: Colors.black,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
   }
 }

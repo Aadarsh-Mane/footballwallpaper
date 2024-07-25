@@ -57,31 +57,36 @@ class _HomeScreenState extends State<HomeScreen>
         slivers: [
           SliverAppBar(
             backgroundColor: Colors.black,
-            expandedHeight: MediaQuery.of(context).size.height * 0.4,
+            expandedHeight:
+                MediaQuery.of(context).size.height * 0.35, // Adjusted height
             floating: true,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              background: CarouselSlider.builder(
-                itemCount: bannerUrls.length,
-                itemBuilder: (context, index, realIndex) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: CachedNetworkImage(
-                      imageUrl: bannerUrls[index],
-                      placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(),
+              background: Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 48.0), // Padding to separate from tab bar
+                child: CarouselSlider.builder(
+                  itemCount: bannerUrls.length,
+                  itemBuilder: (context, index, realIndex) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(20.0),
+                      child: CachedNetworkImage(
+                        imageUrl: bannerUrls[index],
+                        placeholder: (context, url) => Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.error, color: Colors.white),
+                        fit: BoxFit.cover,
+                        width: MediaQuery.of(context).size.width,
                       ),
-                      errorWidget: (context, url, error) =>
-                          Icon(Icons.error, color: Colors.white),
-                      fit: BoxFit.cover,
-                      width: MediaQuery.of(context).size.width,
-                    ),
-                  );
-                },
-                options: CarouselOptions(
-                  autoPlay: true,
-                  aspectRatio: 2.0,
-                  enlargeCenterPage: true,
+                    );
+                  },
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    aspectRatio: 2.0,
+                    enlargeCenterPage: true,
+                  ),
                 ),
               ),
               // title: Text('Trending Wallpapers'),
