@@ -27,7 +27,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: _buildIcon('football.png', 'About'),
-          label: 'Wallpaper of the day',
+          label: 'Wallpaper of the Day',
         ),
       ],
       currentIndex: currentIndex,
@@ -66,23 +66,24 @@ class BottomNavBar extends StatelessWidget {
   // }
   Widget _buildIcon(String imagePath, String label) {
     return Container(
-      padding: const EdgeInsets.all(4.0), // Add some padding around the icon
+      padding: const EdgeInsets.all(8.0), // Add some padding around the icon
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        // color: Colors.white, // Background color if needed
+        // color: Colors.white, // Background color for the icon
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8.0,
-            offset: Offset(0, 2), // Shadow position
+            color:
+                Colors.black.withOpacity(0.4), // Shadow color with transparency
+            blurRadius: 8.0, // Shadow blur radius
+            offset: Offset(0, 4), // Shadow offset
           ),
         ],
       ),
       child: ClipOval(
         child: Image.asset(
           'assets/images/$imagePath',
-          width: 24,
-          height: 24,
+          width: 28, // Slightly larger icon size for better elevation effect
+          height: 28,
           fit: BoxFit.cover, // Ensures the image fits the circle
         ),
       ),
