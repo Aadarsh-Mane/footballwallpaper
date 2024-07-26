@@ -95,6 +95,18 @@ class ImageController {
       case 'Club-Alnassar':
         folderId = '1-cMbz9Q40QA02VBBJRJ1GafiN1w3iR8K';
         break;
+      case 'Club-Bayern Munich':
+        folderId = '1-cMbz9Q40QA02VBBJRJ1GafiN1w3iR8K';
+        break;
+      case 'Club-AS Roma':
+        folderId = '1-cMbz9Q40QA02VBBJRJ1GafiN1w3iR8K';
+        break;
+      case 'Club-Bayern Leverkusen':
+        folderId = '1-cMbz9Q40QA02VBBJRJ1GafiN1w3iR8K';
+        break;
+      case 'Club-Fenerbahche':
+        folderId = '1-cMbz9Q40QA02VBBJRJ1GafiN1w3iR8K';
+        break;
       case '4K':
         folderId = 'YOUR_4K_FOLDER_ID';
         break;
@@ -111,6 +123,9 @@ class ImageController {
         break;
       case 'League-saudi':
         folderId = '1-RNhe-K13BNJYPPQvt7JDPbf0rpcd-tj';
+        break;
+      case 'League-laliga':
+        folderId = '1-MahaNIKpipQhs59lW0f7hIAUWwJVbuk';
         break;
       case 'League-laliga':
         folderId = '1-MahaNIKpipQhs59lW0f7hIAUWwJVbuk';

@@ -19,6 +19,15 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
     'Liverpool',
     'Alhilal',
     'Alnassar',
+    'Bayern Munich',
+    'AS Roma',
+    'Bayer Leverkusen',
+    'Fenerbahce',
+    'Atletico Madrid'
+        'Inter Milan',
+    'Juventus',
+    'Tottenham Hotspur',
+    'PSG',
 
     // Add other clubs as needed
   ];
