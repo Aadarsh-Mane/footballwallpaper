@@ -3,6 +3,7 @@ import 'package:marfootball/controllers/image_controller.dart';
 import 'package:marfootball/views/carousel_image_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import 'dart:math';
 
 class LeagueWallpaperScreen extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
   final ImageController _imageController = ImageController();
   String? _selectedClub;
   List<String> _clubs = [
-    'Real',
+    'Real Madrid',
     'Manchester City',
     // Add other clubs as needed
   ];
@@ -33,96 +34,208 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
     });
   }
 
+  // Method to generate a random rating between 4.2 and 5
+  double _generateRandomRating() {
+    final random = Random();
+    return 4.2 + random.nextDouble() * (5.0 - 4.2);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text(
           'Club Wallpapers',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+              color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
         ),
-        actions: [
-          DropdownButton<String>(
-            value: _selectedClub,
-            icon: Icon(Icons.arrow_downward, color: Colors.white),
-            dropdownColor: Colors.black,
-            style: TextStyle(color: Colors.white),
-            onChanged: _onClubSelected,
-            items: _clubs.map<DropdownMenuItem<String>>((String club) {
-              return DropdownMenuItem<String>(
-                value: club,
-                child: Text(club),
-              );
-            }).toList(),
-          ),
-        ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: FutureBuilder<List<String>>(
-        future: _imageUrls,
-        builder: (context, snapshot) {
-          // Print statements for debugging
-          print('Snapshot connection state: ${snapshot.connectionState}');
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            print('Error: ${snapshot.error}');
-            return Center(
-                child: Text('Failed to load images',
-                    style: TextStyle(color: Colors.white)));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            print('No images found.');
-            return Center(
-                child: Text('No images available',
-                    style: TextStyle(color: Colors.white)));
-          } else {
-            final imageUrls = snapshot.data!;
-            print('Fetched image URLs: $imageUrls'); // Print URLs for debugging
-            return GridView.builder(
-              padding: const EdgeInsets.all(8.0),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: 0.7,
-              ),
-              itemCount: imageUrls.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CarouselImagePage(
-                          imageUrls: imageUrls,
-                          initialIndex: index,
-                        ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedClub,
+                // icon: Icon(Icons.arrow_downward, color: Colors.white),
+                dropdownColor: Colors.black,
+                style: TextStyle(color: Colors.white, fontSize: 16.0),
+                onChanged: _onClubSelected,
+                items: _clubs.map<DropdownMenuItem<String>>((String club) {
+                  return DropdownMenuItem<String>(
+                    value: club,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                    );
-                  },
-                  child: Hero(
-                    tag: 'image_$index',
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12.0),
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrls[index],
-                        placeholder: (context, url) => Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Container(color: Colors.white),
-                        ),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.sports_soccer,
+                              color: Colors.white, size: 20.0),
+                          SizedBox(width: 8.0),
+                          Text(
+                            club,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                );
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<List<String>>(
+              future: _imageUrls,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[700]!,
+                    highlightColor: Colors.grey[600]!,
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(8.0),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 8.0,
+                        childAspectRatio: 0.7,
+                      ),
+                      itemCount: 10, // Placeholder count
+                      itemBuilder: (context, index) {
+                        return Container(
+                          color: Colors.grey[800],
+                        );
+                      },
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                      child: Text('Failed to load images',
+                          style: TextStyle(color: Colors.white)));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(
+                      child: Text('No images available',
+                          style: TextStyle(color: Colors.white)));
+                } else {
+                  final imageUrls = snapshot.data!;
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(8.0),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                      childAspectRatio: 0.7,
+                    ),
+                    itemCount: imageUrls.length,
+                    itemBuilder: (context, index) {
+                      final rating = _generateRandomRating();
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CarouselImagePage(
+                                imageUrls: imageUrls,
+                                initialIndex: index,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Hero(
+                          tag: 'image_$index',
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: CachedNetworkImage(
+                                  imageUrl: imageUrls[index],
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                    baseColor: Colors.grey[700]!,
+                                    highlightColor: Colors.grey[600]!,
+                                    child: Container(
+                                      color: Colors.grey[800],
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error, color: Colors.red),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10.0,
+                                left: 10.0,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.7),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.yellow,
+                                        size: 14.0,
+                                      ),
+                                      SizedBox(width: 4.0),
+                                      Text(
+                                        rating.toStringAsFixed(1),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 8.0,
+                                left: 8.0,
+                                child: Container(
+                                  color: Colors.red,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 4.0),
+                                  child: Text(
+                                    '$_selectedClub',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
               },
-            );
-          }
-        },
+            ),
+          ),
+        ],
       ),
     );
   }

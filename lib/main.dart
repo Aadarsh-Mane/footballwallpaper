@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:marfootball/views/about_screen.dart';
+import 'package:marfootball/views/wallpaper_day.dart';
 import 'package:marfootball/views/home_screen.dart';
 import 'package:marfootball/views/club_screen.dart';
 import 'package:marfootball/views/league_screen.dart';
@@ -41,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
     HomeScreen(),
     SettingsScreen(),
     ProfileScreen(),
-    AboutScreen(),
+    WallpaperDay(),
     // NewScreen()
   ];
 

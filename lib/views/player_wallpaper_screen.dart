@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -17,6 +18,12 @@ class PlayerWallpapersScreen extends StatelessWidget {
 
   PlayerWallpapersScreen(
       {required this.playerName, required this.initialIndex});
+
+  // Method to generate a random rating between 4.2 and 5
+  double _generateRandomRating() {
+    final random = Random();
+    return 4.2 + random.nextDouble() * (5.0 - 4.2);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +68,7 @@ class PlayerWallpapersScreen extends StatelessWidget {
             ),
             itemCount: imageUrls.length,
             itemBuilder: (context, index) {
+              final rating = _generateRandomRating();
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -74,22 +82,58 @@ class PlayerWallpapersScreen extends StatelessWidget {
                 },
                 child: Hero(
                   tag: 'image_$index',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrls[index],
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
-                          color: Colors.white,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12.0),
+                        child: CachedNetworkImage(
+                          imageUrl: imageUrls[index],
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              color: Colors.white,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
                         ),
                       ),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
+                      Positioned(
+                        bottom: 10.0,
+                        left: 10.0,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                                size: 14.0,
+                              ),
+                              SizedBox(width: 4.0),
+                              Text(
+                                rating.toStringAsFixed(1),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
