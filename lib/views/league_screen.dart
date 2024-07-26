@@ -12,10 +12,13 @@ class LeagueWallpaperScreen extends StatefulWidget {
 
 class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
   final ImageController _imageController = ImageController();
-  String? _selectedClub;
+  String? _selectedLeague;
   List<String> _clubs = [
-    'Real Madrid',
-    'Manchester City',
+    'Premuire League',
+    'Serie League',
+    'Saudi League',
+    'Laliga League',
+
     // Add other clubs as needed
   ];
   late Future<List<String>> _imageUrls;
@@ -23,14 +26,15 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedClub = _clubs.first;
-    _imageUrls = _imageController.fetchImageUrls('Club-$_selectedClub');
+    _selectedLeague = _clubs.first;
+    _imageUrls = _imageController.fetchImageUrls('League-$_selectedLeague');
+    print("heheheheh$_selectedLeague");
   }
 
   void _onClubSelected(String? newValue) {
     setState(() {
-      _selectedClub = newValue;
-      _imageUrls = _imageController.fetchImageUrls('Club-$_selectedClub');
+      _selectedLeague = newValue;
+      _imageUrls = _imageController.fetchImageUrls('League-$_selectedLeague');
     });
   }
 
@@ -64,7 +68,7 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
             padding: const EdgeInsets.all(16.0),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                value: _selectedClub,
+                value: _selectedLeague,
                 // icon: Icon(Icons.arrow_downward, color: Colors.white),
                 dropdownColor: Colors.black,
                 style: TextStyle(color: Colors.white, fontSize: 16.0),
@@ -216,7 +220,7 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 8.0, vertical: 4.0),
                                   child: Text(
-                                    '$_selectedClub',
+                                    '$_selectedLeague',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12.0,

@@ -5,7 +5,7 @@ import 'package:marfootball/views/wallpaper_day.dart';
 import 'package:marfootball/views/home_screen.dart';
 import 'package:marfootball/views/club_screen.dart';
 import 'package:marfootball/views/league_screen.dart';
-import 'package:marfootball/views/profile_screen.dart';
+import 'package:marfootball/views/request_screen.dart';
 import 'package:marfootball/views/settings_screen.dart';
 import 'package:marfootball/widgets/bottom_nav_bar.dart';
 import 'package:marfootball/widgets/sidebar.dart';
@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     HomeScreen(),
     SettingsScreen(),
-    ProfileScreen(),
+    RequestScreen(),
     WallpaperDay(),
     // NewScreen()
   ];

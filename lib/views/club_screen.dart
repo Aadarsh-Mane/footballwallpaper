@@ -16,6 +16,10 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
   List<String> _clubs = [
     'Real Madrid',
     'Manchester City',
+    'Liverpool',
+    'Alhilal',
+    'Alnassar',
+
     // Add other clubs as needed
   ];
   late Future<List<String>> _imageUrls;

@@ -83,7 +83,7 @@ class ImageController {
       case 'Club-Manchester':
         folderId = '1-qEh1MRO9suk51rBIVsL1y9_rDS9DNUD';
         break;
-      case 'Club-City':
+      case 'Club-Manchester City':
         folderId = '1-fsMDCMd6MulYpldjebXtFuTGAqrJWzJ';
         break;
       case 'Club-Liverpool':
@@ -101,17 +101,18 @@ class ImageController {
       case '8K':
         folderId = '1-LIGnPMg0_t_QoFgdnuZ9LPysmbnUlmW';
         break;
-      case 'Premuire':
-        folderId = '1-Lc8j7JjIQZgVzxwocuxgBgnOxFAgeCp';
+      case 'League-Premuire League':
+        // folderId = '1-Lc8j7JjIQZgVzxwocuxgBgnOxFAgeCp';
+        folderId = '1-LIGnPMg0_t_QoFgdnuZ9LPysmbnUlmW';
 
         break;
-      case 'seria':
+      case 'League-seria':
         folderId = '1-NPGeHRHBSjGHeM87qQO_nJs9p-hFqXa';
         break;
-      case 'saudi':
+      case 'League-saudi':
         folderId = '1-RNhe-K13BNJYPPQvt7JDPbf0rpcd-tj';
         break;
-      case 'laliga':
+      case 'League-laliga':
         folderId = '1-MahaNIKpipQhs59lW0f7hIAUWwJVbuk';
         break;
       case 'general':
