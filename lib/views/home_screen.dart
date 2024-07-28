@@ -13,8 +13,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<String> bannerUrls = [
     'https://c4.wallpaperflare.com/wallpaper/348/390/445/cristiano-ronaldo-kiev-ukraine-uefa-wallpaper-preview.jpg',
     'https://c4.wallpaperflare.com/wallpaper/874/671/650/soccer-cristiano-ronaldo-portuguese-wallpaper-preview.jpg',
@@ -24,6 +23,11 @@ class _HomeScreenState extends State<HomeScreen>
   final ImageController _imageController = ImageController();
   late TabController _tabController;
   List<String> adsUrls = [];
+  Map<String, List<String>> imageCache = {};
+  Map<String, int> pageCache = {};
+  Map<String, bool> loadingCache = {};
+  Map<String, bool> endOfListCache = {};
+  late AnimationController _animationController;
 
   @override
   void initState() {
@@ -33,6 +37,21 @@ class _HomeScreenState extends State<HomeScreen>
       setState(() {}); // Rebuild the widget tree when the tab changes
     });
     _fetchAdsImages();
+    _initCaches();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  void _initCaches() {
+    for (final tab in ['Trending', 'Clubs', '4K', '8K']) {
+      imageCache[tab] = [];
+      pageCache[tab] = 1;
+      loadingCache[tab] = false;
+      endOfListCache[tab] = false;
+      _fetchImages(tab);
+    }
   }
 
   @override
@@ -55,14 +74,178 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  Future<List<String>> _fetchImages(String category) {
-    return _imageController.fetchImageUrls(category);
+  Future<void> _fetchImages(String category, {bool loadMore = false}) async {
+    if (loadingCache[category]!) return;
+    setState(() {
+      loadingCache[category] = true;
+    });
+
+    try {
+      int page = loadMore ? pageCache[category]! + 1 : 1;
+      final data = await _imageController.fetchImageUrls(category, page: page);
+
+      setState(() {
+        if (loadMore) {
+          imageCache[category]!.addAll(data['imageUrls']);
+          pageCache[category] = page;
+        } else {
+          imageCache[category] = data['imageUrls'];
+          pageCache[category] = 1;
+        }
+        endOfListCache[category] = page >= data['totalPages'];
+      });
+    } catch (e) {
+      print('Error fetching images: $e');
+    }
+
+    setState(() {
+      loadingCache[category] = false;
+    });
   }
 
   // Method to generate a random rating between 4.2 and 5
   double _generateRandomRating() {
     final random = Random();
     return 4.2 + random.nextDouble() * (5.0 - 4.2);
+  }
+
+  // Method to handle pagination and load more images when scrolling down
+  void _onScrollNotification(
+      String category, ScrollNotification scrollNotification) {
+    if (scrollNotification is ScrollEndNotification) {
+      if (scrollNotification.metrics.pixels ==
+          scrollNotification.metrics.maxScrollExtent) {
+        if (!loadingCache[category]! && !endOfListCache[category]!) {
+          _fetchImages(category, loadMore: true);
+        }
+      }
+    }
+  }
+
+  // Build method for image grid with scroll notification
+  Widget _buildImageGrid(String category) {
+    if (loadingCache[category] == true && imageCache[category]!.isEmpty) {
+      return Center(
+        child: AnimatedBuilder(
+          animation: _animationController,
+          child: Image.asset('assets/images/foot.png', width: 50, height: 50),
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 1.0 + 0.3 * _animationController.value,
+              child: Transform.rotate(
+                angle: _animationController.value * 2 * pi,
+                child: child,
+              ),
+            );
+          },
+        ),
+      );
+    }
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        _onScrollNotification(category, scrollNotification);
+        return false;
+      },
+      child: GridView.builder(
+        padding: const EdgeInsets.all(8.0),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
+          childAspectRatio: 0.7,
+        ),
+        itemCount:
+            imageCache[category]!.length + (loadingCache[category]! ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == imageCache[category]!.length &&
+              loadingCache[category]!) {
+            return Center(
+              child: AnimatedBuilder(
+                animation: _animationController,
+                child: Container(
+                  width: 70, // Slightly larger than the image
+                  height: 70, // Slightly larger than the image
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color:
+                        Colors.black, // Background color to ensure visibility
+                  ),
+                  child: Image.asset(
+                    'assets/images/foot.png',
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: 1.0 + 0.3 * _animationController.value,
+                    child: Transform.rotate(
+                      angle: _animationController.value * 2 * pi,
+                      child: child,
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+          final imageUrl = imageCache[category]![index];
+          final rating = _generateRandomRating();
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CarouselImagePage(
+                    imageUrls: imageCache[category]!,
+                    initialIndex: index,
+                  ),
+                ),
+              );
+            },
+            child: Hero(
+              tag: 'image_$index',
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          color: Colors.white,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '⭐ ${rating.toStringAsFixed(1)}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -74,14 +257,12 @@ class _HomeScreenState extends State<HomeScreen>
         slivers: [
           SliverAppBar(
             backgroundColor: Colors.black,
-            expandedHeight:
-                MediaQuery.of(context).size.height * 0.3, // Adjusted height
+            expandedHeight: MediaQuery.of(context).size.height * 0.3,
             floating: true,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               background: Padding(
-                padding: const EdgeInsets.only(
-                    bottom: 48.0), // Padding to separate from tab bar
+                padding: const EdgeInsets.only(bottom: 48.0),
                 child: CarouselSlider.builder(
                   itemCount: combinedBannerUrls.length,
                   itemBuilder: (context, index, realIndex) {
@@ -114,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen>
               unselectedLabelColor: Colors.grey,
               indicatorColor: Colors.white,
               tabs: [
-                Tab(text: 'Trending'),
+                Tab(text: 'Latest'),
                 Tab(text: 'Clubs'),
                 Tab(text: '4K'),
                 Tab(text: '8K'),
@@ -134,109 +315,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildImageGrid(String category) {
-    return FutureBuilder<List<String>>(
-      future: _fetchImages(category),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(
-              child: Text('Failed to load images',
-                  style: TextStyle(color: Colors.white)));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(
-              child: Text('No images available',
-                  style: TextStyle(color: Colors.white)));
-        } else {
-          final imageUrls = snapshot.data!;
-          return GridView.builder(
-            padding: const EdgeInsets.all(8.0),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
-              childAspectRatio: 0.7,
-            ),
-            itemCount: imageUrls.length,
-            itemBuilder: (context, index) {
-              final rating = _generateRandomRating();
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CarouselImagePage(
-                        imageUrls: imageUrls,
-                        initialIndex: index,
-                      ),
-                    ),
-                  );
-                },
-                child: Hero(
-                  tag: 'image_$index',
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: CachedNetworkImage(
-                          imageUrl: imageUrls[index],
-                          placeholder: (context, url) => Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: Container(
-                              color: Colors.white,
-                            ),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 10.0,
-                        left: 10.0,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 4.0),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                color: Colors.yellow,
-                                size: 14.0,
-                              ),
-                              SizedBox(width: 4.0),
-                              Text(
-                                rating.toStringAsFixed(1),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        }
-      },
     );
   }
 }

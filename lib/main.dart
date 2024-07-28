@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:marfootball/services/cache_service.dart';
+import 'package:marfootball/views/general_wallpaper.dart';
+import 'package:marfootball/views/vibes_screen.dart';
 import 'package:marfootball/views/wallpaper_day.dart';
 import 'package:marfootball/views/home_screen.dart';
 import 'package:marfootball/views/club_screen.dart';
@@ -13,6 +16,8 @@ import 'package:marfootball/widgets/sidebar.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await CacheService().initializeCache(); // Initialize the cache service
+
   runApp(MyApp());
 }
 
@@ -91,8 +96,23 @@ class _MainScreenState extends State<MainScreen> {
                       builder: (context) => LeagueWallpaperScreen()),
                 );
                 break;
+              case '/beyond':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => VibesWallpaperScreen()),
+                );
+              case '/marchoice':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GeneralWallpaper()),
+                );
+                break;
             }
-            if (route != '/clubs' && route != '/league')
+            if (route != '/clubs' &&
+                route != '/league' &&
+                route != '/beyond' &&
+                route != '/marchoice')
               Navigator.pop(
                   context); // Close the drawer if not navigating to 'NewScreen'
           });

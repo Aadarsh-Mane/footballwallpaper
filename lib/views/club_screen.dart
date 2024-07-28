@@ -23,31 +23,59 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
     'AS Roma',
     'Bayer Leverkusen',
     'Fenerbahce',
-    'Atletico Madrid'
-        'Inter Milan',
+    'Atletico Madrid',
+    'Inter Milan',
     'Juventus',
     'Tottenham Hotspur',
     'PSG',
-
     // Add other clubs as needed
   ];
-  late Future<List<String>> _imageUrls;
+  List<String> _imageUrls = [];
+  int _currentPage = 1;
+  int _totalPages = 1;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _selectedClub = _clubs.first;
-    _imageUrls = _imageController.fetchImageUrls('Club-$_selectedClub');
+    _fetchImages();
+  }
+
+  Future<void> _fetchImages({bool isInitialLoad = true}) async {
+    if (_isLoading || (_currentPage > _totalPages && !isInitialLoad)) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final data = await _imageController.fetchImageUrls('Club-$_selectedClub',
+          page: _currentPage);
+      setState(() {
+        _imageUrls.addAll(data['imageUrls']);
+        _totalPages = data['totalPages'];
+        _currentPage++;
+      });
+    } catch (error) {
+      print('Error fetching images: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _onClubSelected(String? newValue) {
     setState(() {
       _selectedClub = newValue;
-      _imageUrls = _imageController.fetchImageUrls('Club-$_selectedClub');
+      _imageUrls.clear();
+      _currentPage = 1;
+      _totalPages = 1;
+      _fetchImages();
     });
   }
 
-  // Method to generate a random rating between 4.2 and 5
   double _generateRandomRating() {
     final random = Random();
     return 4.2 + random.nextDouble() * (5.0 - 4.2);
@@ -78,7 +106,6 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _selectedClub,
-                // icon: Icon(Icons.arrow_downward, color: Colors.white),
                 dropdownColor: Colors.black,
                 style: TextStyle(color: Colors.white, fontSize: 16.0),
                 onChanged: _onClubSelected,
@@ -113,139 +140,121 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<String>>(
-              future: _imageUrls,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[700]!,
-                    highlightColor: Colors.grey[600]!,
-                    child: GridView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8.0,
-                        mainAxisSpacing: 8.0,
-                        childAspectRatio: 0.7,
-                      ),
-                      itemCount: 10, // Placeholder count
-                      itemBuilder: (context, index) {
-                        return Container(
-                          color: Colors.grey[800],
-                        );
-                      },
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                      child: Text('Failed to load images',
-                          style: TextStyle(color: Colors.white)));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                      child: Text('No images available',
-                          style: TextStyle(color: Colors.white)));
-                } else {
-                  final imageUrls = snapshot.data!;
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(8.0),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8.0,
-                      mainAxisSpacing: 8.0,
-                      childAspectRatio: 0.7,
-                    ),
-                    itemCount: imageUrls.length,
-                    itemBuilder: (context, index) {
-                      final rating = _generateRandomRating();
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CarouselImagePage(
-                                imageUrls: imageUrls,
-                                initialIndex: index,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Hero(
-                          tag: 'image_$index',
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16.0),
-                                child: CachedNetworkImage(
-                                  imageUrl: imageUrls[index],
-                                  placeholder: (context, url) =>
-                                      Shimmer.fromColors(
-                                    baseColor: Colors.grey[700]!,
-                                    highlightColor: Colors.grey[600]!,
-                                    child: Container(
-                                      color: Colors.grey[800],
-                                    ),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error, color: Colors.red),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 10.0,
-                                left: 10.0,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8.0, vertical: 4.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.7),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.yellow,
-                                        size: 14.0,
-                                      ),
-                                      SizedBox(width: 4.0),
-                                      Text(
-                                        rating.toStringAsFixed(1),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14.0,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 8.0,
-                                left: 8.0,
-                                child: Container(
-                                  color: Colors.red,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8.0, vertical: 4.0),
-                                  child: Text(
-                                    '$_selectedClub',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) {
+                if (scrollInfo.metrics.pixels ==
+                        scrollInfo.metrics.maxScrollExtent &&
+                    !_isLoading) {
+                  _fetchImages(isInitialLoad: false);
+                  return true;
+                }
+                return false;
+              },
+              child: GridView.builder(
+                padding: const EdgeInsets.all(8.0),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                  childAspectRatio: 0.7,
+                ),
+                itemCount: _imageUrls.length + (_isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == _imageUrls.length) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  final imageUrl = _imageUrls[index];
+                  final rating = _generateRandomRating();
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CarouselImagePage(
+                            imageUrls: _imageUrls,
+                            initialIndex: index,
                           ),
                         ),
                       );
                     },
+                    child: Hero(
+                      tag: 'image_$index',
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(16.0),
+                            child: CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: Colors.grey[700]!,
+                                highlightColor: Colors.grey[600]!,
+                                child: Container(
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error, color: Colors.red),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 10.0,
+                            left: 10.0,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 4.0),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.yellow,
+                                    size: 14.0,
+                                  ),
+                                  SizedBox(width: 4.0),
+                                  Text(
+                                    rating.toStringAsFixed(1),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 8.0,
+                            left: 8.0,
+                            child: Container(
+                              color: Colors.red,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 4.0),
+                              child: Text(
+                                '$_selectedClub',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
-                }
-              },
+                },
+              ),
             ),
           ),
         ],

@@ -23,6 +23,8 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
   int _currentPage = 0;
   List<double> _imageHeights = []; // To store the height of each image
   bool _isFullScreen = false; // To toggle full-screen mode
+  bool _isSettingWallpaper = false; // To manage loading state
+  String? _wallpaperMessage; // To show success or failure message
 
   @override
   void initState() {
@@ -65,14 +67,27 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
 
   // Function to set the current image as wallpaper
   void _setWallpaper(String url) async {
+    setState(() {
+      _isSettingWallpaper = true;
+      _wallpaperMessage = null;
+    });
+
     try {
       final filePath = await _downloadImage(url);
       // Set the wallpaper to the home screen
       await WallpaperManager.setWallpaperFromFile(
           filePath, WallpaperManager.HOME_SCREEN);
-      print("Wallpaper set successfully.");
+      setState(() {
+        _wallpaperMessage = "Wallpaper set successfully.";
+      });
     } catch (e) {
-      print("Failed to set wallpaper: $e");
+      setState(() {
+        _wallpaperMessage = "Failed to set wallpaper: $e";
+      });
+    } finally {
+      setState(() {
+        _isSettingWallpaper = false;
+      });
     }
   }
 
@@ -193,7 +208,30 @@ class _CarouselImagePageState extends State<CarouselImagePage> {
                 onPressed: () {
                   _setWallpaper(widget.imageUrls[_currentPage]);
                 },
-                child: Text('Set as Wallpaper'),
+                child: _isSettingWallpaper
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : Text('Set as Wallpaper'),
+              ),
+            ),
+          if (_wallpaperMessage != null)
+            Positioned(
+              bottom: 80,
+              left: 16,
+              right: 16,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _wallpaperMessage!,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
             ),
         ],

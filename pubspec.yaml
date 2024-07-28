@@ -45,6 +45,8 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   url_launcher: ^6.3.0
   easy_url_launcher: ^0.0.7
+  flutter_cache_manager: ^3.3.3
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
@@ -54,7 +56,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/marlogo.png"
+  image_path: "assets/images/marfinal.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

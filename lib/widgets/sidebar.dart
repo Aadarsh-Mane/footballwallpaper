@@ -78,7 +78,7 @@ class Sidebar extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
-                    'About',
+                    'Wallpaper of the day',
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
@@ -101,6 +101,24 @@ class Sidebar extends StatelessWidget {
                   ),
                   onTap: () {
                     onMenuItemClicked('/league');
+                  },
+                ),
+                ListTile(
+                  title: Text(
+                    'MAR Choice',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    onMenuItemClicked('/marchoice');
+                  },
+                ),
+                ListTile(
+                  title: Text(
+                    'MAR Beyond Football',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    onMenuItemClicked('/beyond');
                   },
                 ),
               ],

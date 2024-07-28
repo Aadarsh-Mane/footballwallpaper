@@ -18,6 +18,7 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
     'Serie League',
     'Saudi League',
     'Laliga League',
+    'Bundesliga'
 
     // Add other clubs as needed
   ];
@@ -27,14 +28,14 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen> {
   void initState() {
     super.initState();
     _selectedLeague = _clubs.first;
-    _imageUrls = _imageController.fetchImageUrls('League-$_selectedLeague');
+    // _imageUrls = _imageController.fetchImageUrls('League-$_selectedLeague');
     print("heheheheh$_selectedLeague");
   }
 
   void _onClubSelected(String? newValue) {
     setState(() {
       _selectedLeague = newValue;
-      _imageUrls = _imageController.fetchImageUrls('League-$_selectedLeague');
+      // _imageUrls = _imageController.fetchImageUrls('League-$_selectedLeague');
     });
   }
 
