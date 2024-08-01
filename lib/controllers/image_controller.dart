@@ -70,14 +70,14 @@ class ImageController {
 
     switch (category) {
       case 'Trending':
-        folderId = '1TKlHnawAQCXydSbTEU4bVeJLiHFujjCC';
+        folderId = '1-2Sx_72mrzSsZ6W7Qz-J_-_pRaE2Rnj1';
         // folderId = '1-7VZ1uAUWjHD-JUu7iq7mAsUXZMmiQhl';
         break;
       case 'Clubs':
         folderId = '1ggL_nRRH8ivDyk7YcMwYoUUt5zCxRU34';
         break;
       case 'Club-Real Madrid':
-        folderId = '1TKlHnawAQCXydSbTEU4bVeJLiHFujjCC';
+        folderId = '1-2Sx_72mrzSsZ6W7Qz-J_-_pRaE2Rnj1';
         // folderId = '1-2Sx_72mrzSsZ6W7Qz-J_-_pRaE2Rnj1';
         break;
       case 'Club-Barcelona':
@@ -149,7 +149,7 @@ class ImageController {
         folderId = '1-7VZ1uAUWjHD-JUu7iq7mAsUXZMmiQhl';
         break;
       case 'vibes':
-        folderId = '1-LIGnPMg0_t_QoFgdnuZ9LPysmbnUlmW';
+        folderId = '1-vU6hbmnKlGW5jB0v61YPjNXSTxGNSDy';
         break;
 
       default:

@@ -10,7 +10,8 @@ class ClubWallpaperScreen extends StatefulWidget {
   _ClubWallpaperScreenState createState() => _ClubWallpaperScreenState();
 }
 
-class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
+class _ClubWallpaperScreenState extends State<ClubWallpaperScreen>
+    with SingleTickerProviderStateMixin {
   final ImageController _imageController = ImageController();
   String? _selectedClub;
   List<String> _clubs = [
@@ -34,12 +35,17 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
   int _currentPage = 1;
   int _totalPages = 1;
   bool _isLoading = false;
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
     _selectedClub = _clubs.first;
     _fetchImages();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    )..repeat(reverse: true);
   }
 
   Future<void> _fetchImages({bool isInitialLoad = true}) async {
@@ -162,7 +168,20 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen> {
                 itemBuilder: (context, index) {
                   if (index == _imageUrls.length) {
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: AnimatedBuilder(
+                        animation: _animationController,
+                        child: Image.asset('assets/images/foot.png',
+                            width: 50, height: 50),
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: 1.0 + 0.3 * _animationController.value,
+                            child: Transform.rotate(
+                              angle: _animationController.value * 2 * pi,
+                              child: child,
+                            ),
+                          );
+                        },
+                      ),
                     );
                   }
 

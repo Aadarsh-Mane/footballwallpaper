@@ -47,6 +47,9 @@ dependencies:
   easy_url_launcher: ^0.0.7
   flutter_cache_manager: ^3.3.3
   shared_preferences: ^2.2.3
+  image_gallery_saver: ^2.0.3
+  flutter_windowmanager: ^0.2.0
+  quickalert: ^1.1.0
 
 dev_dependencies:
   flutter_test:

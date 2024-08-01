@@ -64,13 +64,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     try {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('ads').get();
-      List<String> fetchedAdsUrls =
-          querySnapshot.docs.map((doc) => doc['urlimage'] as String).toList();
+      List<String> fetchedAdsUrls = querySnapshot.docs.map((doc) {
+        String url = doc['urlimage'] as String;
+        print('Fetched URL: $url');
+        return url;
+      }).toList();
       setState(() {
         adsUrls = fetchedAdsUrls;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error fetching ads images: $e');
+      print(stackTrace); // Print the stack trace for more details
     }
   }
 

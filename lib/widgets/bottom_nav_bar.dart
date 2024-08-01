@@ -50,7 +50,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           label: 'Request',
         ),
         BottomNavigationBarItem(
-          icon: _buildAnimatedIcon('football.png'),
+          icon: _buildAnimatedIcon('gold.png'),
           label: 'Wallpaper of the day',
         ),
       ],
