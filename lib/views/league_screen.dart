@@ -16,19 +16,10 @@ class _LeagueWallpaperScreenState extends State<LeagueWallpaperScreen>
   String? _selectedClub;
   List<String> _clubs = [
     'Premuire League',
-    'Manchester City',
-    'Liverpool',
-    'Alhilal',
-    'Alnassar',
-    'Bayern Munich',
-    'AS Roma',
-    'Bayer Leverkusen',
-    'Fenerbahce',
-    'Atletico Madrid',
-    'Inter Milan',
-    'Juventus',
-    'Tottenham Hotspur',
-    'PSG',
+    'Serie League',
+    'Saudi League',
+    'laliga'
+        'Bundesliga'
     // Add other clubs as needed
   ];
   List<String> _imageUrls = [];
