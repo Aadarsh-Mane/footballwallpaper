@@ -10,6 +10,8 @@ import 'package:marfootball/views/club_screen.dart';
 import 'package:marfootball/views/league_screen.dart';
 import 'package:marfootball/views/request_screen.dart';
 import 'package:marfootball/views/settings_screen.dart';
+import 'package:marfootball/widgets/CustomPageRoute.dart';
+import 'package:marfootball/widgets/SplashScreen.dart';
 import 'package:marfootball/widgets/bottom_nav_bar.dart';
 import 'package:marfootball/widgets/sidebar.dart';
 
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainScreen(),
+      home: SplashScreen(),
     );
   }
 }
@@ -85,27 +87,28 @@ class _MainScreenState extends State<MainScreen> {
               case '/clubs':
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => ClubWallpaperScreen()),
+                  CustomPageRoute(
+                      page: ClubWallpaperScreen()), // Use CustomPageRoute
                 );
                 break;
               case '/league':
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => LeagueWallpaperScreen()),
+                  CustomPageRoute(
+                      page: LeagueWallpaperScreen()), // Use CustomPageRoute
                 );
                 break;
               case '/beyond':
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => VibesWallpaperScreen()),
+                  CustomPageRoute(
+                      page: VibesWallpaperScreen()), // Use CustomPageRoute
                 );
               case '/marchoice':
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GeneralWallpaper()),
+                  CustomPageRoute(
+                      page: GeneralWallpaper()), // Use CustomPageRoute
                 );
                 break;
             }

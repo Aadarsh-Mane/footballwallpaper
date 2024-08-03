@@ -29,7 +29,6 @@ class _ClubWallpaperScreenState extends State<ClubWallpaperScreen>
     'Juventus',
     'Tottenham Hotspur',
     'PSG',
-    // Add other clubs as needed
   ];
   List<String> _imageUrls = [];
   int _currentPage = 1;

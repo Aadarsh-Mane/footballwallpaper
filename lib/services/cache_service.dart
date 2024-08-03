@@ -6,8 +6,8 @@ class CacheService {
   final BaseCacheManager _cacheManager = CacheManager(
     Config(
       "customCache",
-      stalePeriod: Duration(days: 7),
-      maxNrOfCacheObjects: 50,
+      stalePeriod: Duration(minutes: 20),
+      maxNrOfCacheObjects: 10,
     ),
   );
 
